@@ -12,8 +12,8 @@
 - mtcnn 0.1.0
 
 ### Chạy chương trình:
-- Lưu ý các bạn phải cài đúng các phiên bản của các thư viện trên. Có thể chạy file `requirements.txt` hoặc tự cài riêng từng thư viện: `pip3 install -r requirements.txt`.
-- Clone thư mục này về, `cd` vô forder `final_report_TTNT` tương tự như sau: `~/vanlong/ky6/TriTNT/finish_model/final_report_TTNT$`. Tạ thực hiện tất cả các lệnh tại thư mục này.
+- Lưu ý các bạn phải cài đúng các phiên bản của các thư viện trên. Bạn có thể cài đặt riêng từng thư viện hoặc có thể chạy file `requirements.txt`: `pip3 install -r requirements.txt`.
+- Clone thư mục này về, `cd` vô forder `final_report_TTNT` tương tự như sau: `~/vanlong/ky6/TriTNT/finish_model/final_report_TTNT$`. Ta thực hiện tất cả các lệnh tại thư mục này.
 - Vì file model nặng nên không thể upload lên github, các bạn tải file mode [tại đây](https://drive.google.com/drive/folders/1zG6k__Ndp0vGWWpyOfYIn0CTjc81GvYw?usp=sharing). Sau khi download các file model về, ta lưu các file model trong thư mục model_file. Lưu ý không chỉnh sửa tên các file model, nếu không sẽ bị 1 số lỗi gọi tên file khi chạy chương trình.
 - Sau khi cài đặt xong các thư viện và tải file model về, ta chạy lệnh sau để demo kết quả:
 `python3 final_source/gui_demo.py`.
