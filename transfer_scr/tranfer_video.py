@@ -7,16 +7,16 @@ import cv2
 
 index_to_labes = {}
 
-label_to_index = {'manh_hung': 0, 'Mai_ly': 1, 'van_long': 2, 'Tien_dung': 3, 'bich_lan': 4, 'nguyen': 5, 'trong_nghia': 6, 'tien_thang': 7, 'Truong Thanh Sang_1712945': 8, 'Phung Tuan Hung_1611444': 9, 'Nguyen Thi Tuyet_1613947': 10, 'Truong Minh Tuan_1613935': 11, 'Dinh Manh Cuong_1510352': 12, 'Dao Duy Hanh_1711205': 13, 'Hoang Vu Nam_1512062': 14, 'Luu Anh Khoa_1611610': 15, 'Huynh Vuong Vu_1514097': 16, 'Le Phuc Thanh_1613178': 17, 'Dinh Giang Nam_1512059': 18, 'Nguyen Phu Cuong_1710725': 19, 'Ngo Trong Huu_1511438': 20, 'duc_thinh': 21, 'duy_quang': 22, 'hoang_hiep': 23, 'ngoc_anh': 24, 'phuoc_loc': 25, 'hieu_nguyen': 26, 'xuan_tien': 27}
-
+# label_to_index = {'manh_hung': 0, 'Mai_ly': 1, 'van_long': 2, 'Tien_dung': 3, 'bich_lan': 4, 'nguyen': 5, 'trong_nghia': 6, 'tien_thang': 7, 'Truong Thanh Sang_1712945': 8, 'Phung Tuan Hung_1611444': 9, 'Nguyen Thi Tuyet_1613947': 10, 'Truong Minh Tuan_1613935': 11, 'Dinh Manh Cuong_1510352': 12, 'Dao Duy Hanh_1711205': 13, 'Hoang Vu Nam_1512062': 14, 'Luu Anh Khoa_1611610': 15, 'Huynh Vuong Vu_1514097': 16, 'Le Phuc Thanh_1613178': 17, 'Dinh Giang Nam_1512059': 18, 'Nguyen Phu Cuong_1710725': 19, 'Ngo Trong Huu_1511438': 20, 'duc_thinh': 21, 'duy_quang': 22, 'hoang_hiep': 23, 'ngoc_anh': 24, 'phuoc_loc': 25, 'hieu_nguyen': 26, 'xuan_tien': 27}
+label_to_index = {'xuan_tien': 0, 'van_long': 1, 'tien_thang': 2, 'Tien_dung': 3, 'phuoc_loc': 4, 'ngoc_anh': 5, 'manh_hung': 6, 'bich_lan': 7}
 
 for key,value in label_to_index.items():
     index_to_labes[value] = key
 print(index_to_labes)
 
 #Load model
-loaded_model = load_model('./transfer_model_file/transfer_model.h5')
-loaded_model.load_weights('./transfer_model_file/transfer_weights.h5')
+loaded_model = load_model('/home/vanlong/vanlong/ky6/final_report_do_an/transfer_model_file/tranfer_model_facenet_100.h5')
+loaded_model.load_weights('/home/vanlong/vanlong/ky6/final_report_do_an/transfer_model_file/transfer_weights_facenet_100.h5')
 
 
 
@@ -42,8 +42,11 @@ while cap.isOpened():
                 print(im_crop.shape)
                 if im_crop.shape[0] > 0 and im_crop.shape[1] > 0:
                     # im_crop = cv2.cvtColor(im_crop, cv2.COLOR_BGR2HSV)
-                    im_crop = cv2.resize(im_crop,(224,224))
-                    im_crop = (im_crop/255)   
+                    im_crop = cv2.resize(im_crop,(160,160))
+                    im_crop = (im_crop/255) 
+                    im_crop = im_crop.astype('float32')	
+                    mean, std = im_crop.mean(), im_crop.std()
+                    im_crop = (im_crop - mean) / std  
                     print(im_crop.shape)        #normalize
                     im_crop = [im_crop]
                     im_crop = np.array(im_crop)

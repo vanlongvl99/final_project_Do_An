@@ -25,8 +25,10 @@ print(index_to_labes)
 
 
 #Load model
-loaded_model = load_model('./keras_cnn_model_file/model_keras1.h5')
-loaded_model.load_weights('./keras_cnn_model_file/model_keras_weights1.h5')
+# loaded_model = load_model('./keras_cnn_model_file/model_keras1.h5')
+# loaded_model.load_weights('./keras_cnn_model_file/model_keras_weights1.h5')
+loaded_model = load_model('./keras_cnn_model_file/model_hsv1.h5')
+loaded_model.load_weights('./keras_cnn_model_file/model_weights_hsv1.h5')
 detector = MTCNN()
 cap = cv2.VideoCapture(0)
 
