@@ -58,6 +58,9 @@ while cap.isOpened():
                     print('\n',index_to_labes[max_index], prediction[max_index])
                     if prediction[max_index] > 0.5:
                         cv2.putText(frame, index_to_labes[max_index] + " " + str(np.round(prediction[max_index],2)) , (bounding_box[0], bounding_box[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (30, 255, 30), 2, cv2.LINE_AA)
+                    else:
+                        cv2.putText(frame, 'unknown' , (bounding_box[0], bounding_box[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (30, 255, 30), 2, cv2.LINE_AA)
+
         cv2.imshow("frame",frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
               break

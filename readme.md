@@ -1,8 +1,5 @@
-# Đồ Án Môn Học
-## Đề tài: Face Recognition
-### Thành viên
-- Nguyễn Văn Long Mssv 1712024
-- Nguyễn Thị Bích Lan Mssv 1711884
+# Đề tài: Face Recognition
+
 
 ### Môi trường:
 - Ubuntu 18.04

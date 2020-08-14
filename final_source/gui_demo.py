@@ -1,9 +1,9 @@
-import tkinter as tk 
-from tkinter import Message, Text 
-import cv2 
-import os 
-import csv 
-import numpy as np 
+import tkinter as tk
+from tkinter import Message, Text, messagebox
+import cv2
+import os
+import csv
+import numpy as np
 from mtcnn.mtcnn import MTCNN
 from sklearn.svm import SVC
 from tensorflow.keras.models import load_model
@@ -12,68 +12,73 @@ from numpy import expand_dims
 from sklearn.preprocessing import Normalizer
 import datetime
 from numpy import load
-from os import listdir  
+from os import listdir
+import os.path
 
 
-window = tk.Tk()  
-window.title("Face_Recogniser") 
-window.configure(background ='white') 
-window.grid_rowconfigure(0, weight = 1) 
-window.grid_columnconfigure(0, weight = 1) 
-message = tk.Label( 
-    window, text ="Face-Recognition-System",  
-    bg ="green", fg = "white", width = 50,  
-    height = 3, font = ('times', 30, 'bold'))  
-      
-message.place(x = 200, y = 20) 
-  
-  
-lbl2 = tk.Label(window, text ="Name of new person",  
-width = 20, fg ="green", bg ="white",  
-height = 2, font =('times', 15, ' bold '))  
-lbl2.place(x = 400, y = 200) 
-  
-txt2 = tk.Entry(window, width = 20,  
-bg ="white", fg ="green",  
-font = ('times', 15, ' bold ')  ) 
-txt2.place(x = 700, y = 215) 
-  
+window = tk.Tk()
+window.title("Face_Recogniser")
+window.configure(background ='white')
+window.grid_rowconfigure(0, weight = 1)
+window.grid_columnconfigure(0, weight = 1)
+message = tk.Label(
+    window, text ="Face-Recognition-System",
+    bg ="green", fg = "white", width = 50,
+    height = 3, font = ('times', 30, 'bold'))
+
+message.place(x = 200, y = 20)
+
+
+lbl2 = tk.Label(window, text ="Name of new person",
+width = 20, fg ="green", bg ="white",
+height = 2, font =('times', 15, ' bold '))
+lbl2.place(x = 400, y = 200)
+
+txt2 = tk.Entry(window, width = 20,
+bg ="white", fg ="green",
+font = ('times', 15, ' bold ')  )
+txt2.place(x = 700, y = 215)
+
 
 model_facenet = load_model('./model_file_main/facenet_keras.h5')
 model_facenet.load_weights('./model_file_main/facenet_keras_weights.h5')
-# Take train image of new user.   
-def TakeImages():         
-    name =(txt2.get()) 
-    os.mkdir( "dataset/data_new/" + name)
-    print("dataset/data_new/" + name)
-    cam = cv2.VideoCapture(0)  
-    detector = MTCNN()
-    while(True): 
-        name_rand = np.random.rand(1)[0]
+# Take train image of new user.
+def TakeImages():
+    name =(txt2.get())
+    if os.path.exists("./dataset/data_new/" + name) == True:
+        messagebox.showinfo(title = "Error", message = "Tên người dùng đã có trong tập dữ liệu!")
+    else:
+        os.mkdir( "./dataset/data_new/" + name)
+        print("./dataset/data_new/" + name)
+        cam = cv2.VideoCapture(0)
+        detector = MTCNN()
         count = 0
-        ret, frame = cam.read()
-        frame = cv2.resize(frame,(640,int(frame.shape[0]/frame.shape[1]*640)))  
-        faces = detector.detect_faces(frame)
-        # get face of new person by mtcnn
-        if len(faces) == 1:
-            for person in faces:
-                bounding_box = person['box']
-                im_crop = frame[bounding_box[1]: bounding_box[1] + bounding_box[3], bounding_box[0]: bounding_box[0]+bounding_box[2] ]
-                if im_crop.shape[0] > 0 and im_crop.shape[1] > 0:
-                    cv2.rectangle(frame,(bounding_box[0],bounding_box[1]),(bounding_box[0] + bounding_box[2],bounding_box[1] + bounding_box[3]),(0,155,255),3)
-                    cv2.imwrite("dataset/data_new/" + name + "/" + name +'_'+ str(name_rand) + ".jpg", im_crop) 
-                    count += 1
-        cv2.imshow('frame', frame) 
-        if cv2.waitKey(100) & 0xFF == ord('q'): 
-            break
-        # break if the sample number is more than 300 
-        elif count >300: 
-            break
-    cam.release()  
-    cv2.destroyAllWindows()  
+        while(True):
+            name_rand = np.random.rand(1)[0]
+            ret, frame = cam.read()
+            frame = cv2.flip(frame, 1)
+            frame = cv2.resize(frame,(640,int(frame.shape[0]/frame.shape[1]*640)))
+            faces = detector.detect_faces(frame)
+            # get face of new person by mtcnn
+            if len(faces) == 1:
+                for person in faces:
+                    bounding_box = person['box']
+                    im_crop = frame[bounding_box[1]: bounding_box[1] + bounding_box[3], bounding_box[0]: bounding_box[0]+bounding_box[2] ]
+                    if im_crop.shape[0] > 0 and im_crop.shape[1] > 0:
+                        cv2.rectangle(frame,(bounding_box[0],bounding_box[1]),(bounding_box[0] + bounding_box[2],bounding_box[1] + bounding_box[3]),(0,155,255),3)
+                        count += 1
+                        cv2.imwrite("./dataset/data_new/" + name + "/" + name +'_'+ str(count) + ".jpg", im_crop)
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(100) & 0xFF == ord('q'):
+                break
+            # break if the sample number is more than 300
+            elif count == 150:
+                break
+        cam.release()
+        cv2.destroyAllWindows()
 
-# Training the images saved in training image folder 
-def TrainImages(): 
+# Training the images saved in training image folder
+def TrainImages():
     path = './dataset/data_new'
     label_to_index = {}
     cnt = 0
@@ -122,38 +127,39 @@ def TrainImages():
     #save model svm
     filename = './model_file_main/new_face_recognition_model_svm_1.sav'
     joblib.dump(model_svm, filename)
-  
+    messagebox.showinfo(title="Thông báo", message="Hoàn tất training!")
 
-# For testing phase 
+# For testing phase
 # get the face embedding for one face
 def get_embedding(model, face_pixels):
     face_pixels = cv2.resize(face_pixels,(160,160))
     face_pixels = (face_pixels/255)
 	# scale pixel values
-    face = face_pixels.astype('float32')	
+    face = face_pixels.astype('float32')
     mean, std = face.mean(), face.std()
     face = (face - mean) / std
     samples = expand_dims(face, axis=0)
     yhat = model.predict(samples)
     return yhat[0]
-    
+
 
 def face_recognition(index_to_labels, svm_file):
     loaded_model_SVM = joblib.load(svm_file)
     detector = MTCNN()
-    cam = cv2.VideoCapture(0) 
-    # cam = cv2.VideoCapture('http://192.168.1.16:8080/video') 
-    while True:         
-        ret, image = cam.read() 
+    cam = cv2.VideoCapture(0)
+    # cam = cv2.VideoCapture('http://192.168.1.16:8080/video')
+    while True:
+        ret, image = cam.read()
         # print("mtcnn")
         # print(datetime.datetime.now())
+        image = cv2.flip(image, 1)
         image = cv2.resize(image,(640,int(image.shape[0]/image.shape[1]*640)))
         faces = detector.detect_faces(image)
         # print(datetime.datetime.now(),"\n")
         for person in faces:
             bounding_box = person['box']
-            # Specifying the coordinates of the image as well 
-            im_crop = image[bounding_box[1]: bounding_box[1] + bounding_box[3], bounding_box[0]: bounding_box[0]+bounding_box[2] ]            
+            # Specifying the coordinates of the image as well
+            im_crop = image[bounding_box[1]: bounding_box[1] + bounding_box[3], bounding_box[0]: bounding_box[0]+bounding_box[2] ]
             if im_crop.shape[0] > 0 and im_crop.shape[1] > 0:
                 # print("facenet")
                 im_embedding = get_embedding(model_facenet, im_crop)
@@ -179,13 +185,13 @@ def face_recognition(index_to_labels, svm_file):
                 else:
                     cv2.putText(image, 'unknown', (bounding_box[0], bounding_box[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (30, 255, 30), 2, cv2.LINE_AA)
         cv2.imshow('image',image)
-        if cv2.waitKey(100) & 0xFF == ord('q'): 
+        if cv2.waitKey(100) & 0xFF == ord('q'):
             break
-    cam.release() 
-    cv2.destroyAllWindows() 
+    cam.release()
+    cv2.destroyAllWindows()
 
 
-def button_test_video(): 
+def button_test_video():
     label_to_index = {'manh_hung': 0, 'Mai_ly': 1, 'van_long': 2, 'Tien_dung': 3, 'bich_lan': 4, 'nguyen': 5, 'trong_nghia': 6, 'tien_thang': 7, 'Truong Thanh Sang_1712945': 8, 'Phung Tuan Hung_1611444': 9, 'Nguyen Thi Tuyet_1613947': 10, 'Truong Minh Tuan_1613935': 11, 'Dinh Manh Cuong_1510352': 12, 'Dao Duy Hanh_1711205': 13, 'Hoang Vu Nam_1512062': 14, 'Luu Anh Khoa_1611610': 15, 'Huynh Vuong Vu_1514097': 16, 'Le Phuc Thanh_1613178': 17, 'Dinh Giang Nam_1512059': 18, 'Nguyen Phu Cuong_1710725': 19, 'Ngo Trong Huu_1511438': 20, 'duc_thinh': 21, 'duy_quang': 22, 'hoang_hiep': 23, 'ngoc_anh': 24, 'phuoc_loc': 25, 'hieu_nguyen': 26, 'xuan_tien': 27}
     index_to_labels = {}
     for key,value in label_to_index.items():
